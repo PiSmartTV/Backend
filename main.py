@@ -9,6 +9,7 @@ with open("secret_key.txt", "r") as file:
     client_secret = raw_txt[1]
 
 app.config["SECRET_KEY"] = client_secret
+app.config["OAUTHLIB_INSECURE_TRANSPORT"] = True
 
 github_blueprint = make_github_blueprint(
     client_id=client_id,
