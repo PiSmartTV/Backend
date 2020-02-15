@@ -1,3 +1,3 @@
-[submodule "libfoo"]
+[submodule "templates"]
 	path = templates
 	url = https://www.github.com/PiSmartTV/Frontend.git
