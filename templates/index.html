@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        Spite - Smart TV for Raspberry Pi
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            font-family: "Ubuntu", sans-serif;
+
+        }
+
+        header {
+            height: 10vh;
+            background-color: rgb(61, 133, 203);
+        }
+
+        .header-container {
+            height: 7vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1vh;
+        }
+
+        .container {
+            position: absolute;
+            top: 7vh;
+            border-top-left-radius: 2vh;
+            height: 93vh;
+            width: 100%;
+            background-color: white;
+
+        }
+
+        .header-container>img {
+            height: 100%;
+        }
+
+        .header-links {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .header-links>* {
+            margin: 0 1vw;
+        }
+
+        .header-links>a,
+        .header-links>a:hover,
+        .header-links>a:link,
+        .header-links>a:active,
+        .header-links>a:focus {
+            color: white;
+            font-size: 3vh;
+            text-decoration: none;
+
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <img src="https://www.arizonachristian.edu/wp-content/uploads/2017/06/logo-placeholder.png">
+            <div class="header-links">
+                <a href="login">Login</a>
+                <a href="register">Register</a>
+            </div>
+        </div>
+
+    </header>
+    <div class="container">
+
+    </div>
+</body>
+
+</html>
