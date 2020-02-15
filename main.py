@@ -1,18 +1,22 @@
 from flask import Flask, url_for, redirect, render_template
 from flask_dance.contrib.github import make_github_blueprint, github
+import os
 
 app = Flask(__name__)
 
-with open("secret_key.txt", "r") as file:
-    raw_txt = file.readlines()
-    client_id = raw_txt[0][:-1]
-    client_secret = raw_txt[1]
+github_client_secret = os.environ.get("GITHUB_CLIENT_SECRET")
+github_client_id = os.environ.get("GITHUB_CLIENT_ID")
 
-app.config["SECRET_KEY"] = client_secret
+google_client_secret = os.environ.get("GOOGLE_CLIENT_SECRET")
+google_client_id = os.environ.get("GOOGLE_CLIENT_ID")
+
+app.config["SECRET_KEY"] = github_client_secret
+app.conifg["GOOGLE_OAUTH_CLIENT_ID"] = google_client_id
+app.config["GOOGLE_OAUTH_CLIENT_SECRET"] = google_client_secret
 
 github_blueprint = make_github_blueprint(
-    client_id=client_id,
-    client_secret=client_secret
+    client_id=github_client_id,
+    client_secret=github_client_secret
 )
 
 app.register_blueprint(github_blueprint, url_prefix='/login/github')
