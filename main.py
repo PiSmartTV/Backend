@@ -7,12 +7,12 @@ app = Flask(__name__)
 github_client_secret = os.environ.get("GITHUB_CLIENT_SECRET")
 github_client_id = os.environ.get("GITHUB_CLIENT_ID")
 
-google_client_secret = os.environ.get("GOOGLE_CLIENT_SECRET")
-google_client_id = os.environ.get("GOOGLE_CLIENT_ID")
+# google_client_secret = os.environ.get("GOOGLE_CLIENT_SECRET")
+# google_client_id = os.environ.get("GOOGLE_CLIENT_ID")
 
 app.config["SECRET_KEY"] = github_client_secret
-app.conifg["GOOGLE_OAUTH_CLIENT_ID"] = google_client_id
-app.config["GOOGLE_OAUTH_CLIENT_SECRET"] = google_client_secret
+# app.conifg["GOOGLE_OAUTH_CLIENT_ID"] = google_client_id
+# app.config["GOOGLE_OAUTH_CLIENT_SECRET"] = google_client_secret
 
 github_blueprint = make_github_blueprint(
     client_id=github_client_id,
