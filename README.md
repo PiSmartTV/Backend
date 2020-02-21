@@ -1,2 +1,0 @@
-# Backend
-Flask Python backend.
