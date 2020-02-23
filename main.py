@@ -33,8 +33,6 @@ github_blueprint = make_github_blueprint(
 app.register_blueprint(github_blueprint, url_prefix='/login/github')
 
 db = SQLAlchemy(app)
-if not os.path.isfile("data.db"):  # Check if database exists
-    db.create_all()                # If not, create it
 
 login_manager = LoginManager(app)
 bcrypt = Bcrypt(app)
