@@ -1,2 +1,1 @@
-web: gunicorn main:app
-init: python -c "from main import db; db.create_all()"
+web: python -c "from main import db;db.create_all()" && gunicorn main:app
