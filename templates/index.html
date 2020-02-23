@@ -3,43 +3,44 @@
 
 <head>
     <title>
-        Spite - Smart TV for Raspberry Pi
+        PiTV - Smart TV for Raspberry Pi
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu|Material+Icons&display=swap" rel="stylesheet">
+
     <style>
         body {
             margin: 0;
             height: 100vh;
-            font-family: "Ubuntu", sans-serif;
-
         }
 
         header {
-            height: 10vh;
+            height: 6vh;
             background-color: rgb(61, 133, 203);
+            color: white;
+
         }
 
         .header-container {
-            height: 7vh;
+            margin: auto;
+            width: 65%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 1vh;
         }
 
         .container {
-            position: absolute;
-            top: 7vh;
-            border-top-left-radius: 2vh;
-            height: 93vh;
-            width: 100%;
-            background-color: white;
+            margin: auto;
+            width: 65%;
+            height: 100%;
+            background-color: red;
 
         }
 
         .header-container>img {
             height: 100%;
+
         }
 
         .header-links {
@@ -57,9 +58,33 @@
         .header-links>a:active,
         .header-links>a:focus {
             color: white;
-            font-size: 3vh;
             text-decoration: none;
+            font-weight: bolder;
+            font-size: larger;
+            letter-spacing: .1rem;
+            font-family: "Ubuntu", sans-serif;
+            user-select: none;
+        }
 
+        .header-container>a.material-icons {
+            display: none;
+        }
+
+        @media screen and (max-width: 800px),
+        screen and (orientation: portrait) {
+
+            .header-container,
+            .container {
+                width: 95%;
+            }
+
+            .header-links {
+                display: none;
+            }
+
+            .header-container>a.material-icons {
+                display: initial;
+            }
         }
     </style>
 </head>
@@ -72,6 +97,7 @@
                 <a href="login">Login</a>
                 <a href="register">Register</a>
             </div>
+            <a class="material-icons" onclick="toggleMenu();">dehaze</a>
         </div>
 
     </header>
@@ -79,5 +105,10 @@
 
     </div>
 </body>
+<script>
+    function toggleMenu() {
+        alert("Not yet implemented!");
+    }
+</script>
 
 </html>

@@ -128,5 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Secret keys
-secret_key.txt
+# Setup keys for testing
+run_env.py
+
+# Database
+data.db
