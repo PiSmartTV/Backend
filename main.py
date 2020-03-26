@@ -1,11 +1,14 @@
+import os
+import string
+import random
+from datetime import datetime
 from flask import Flask, url_for, redirect, render_template, request, abort
 from flask_dance.contrib.github import make_github_blueprint, github
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
-from datetime import datetime
-import os
+from flask_login import LoginManager, UserMixin, login_required, login_user,\
+    logout_user, current_user
 
 app = Flask(__name__)
 
@@ -37,18 +40,23 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 bcrypt = Bcrypt(app)
 
+
+def generate_token(leng=64):
+    return ''.join([random.choice(string.ascii_lowercase+"0123456789")
+                    for i in range(64)])
+
+
 # User database
-
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), unique=True, nullable=False)
-    name = db.Column(db.String(126))
+    name = db.Column(db.String(128))
     email = db.Column(db.String(256), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
+    token = db.Column(db.String(64), nullable=False,
+                      unique=True, default=generate_token)
+
     date_created = db.Column(db.DateTime, default=datetime.now)
-    github = db.Column(db.Boolean(), default=False)
-    google = db.Column(db.Boolean(), default=False)
 
 
 # load user by id
@@ -61,6 +69,18 @@ def load_user(user_id):
 def home():
     return render_template("index.html")
 
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user(current_user)
+
+
+@app.route("/token", methods=["GET"])
+@login_required
+def token():
+    return current_user.token
+
 # Login
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -69,12 +89,14 @@ def login():
         password = request.form["password"]
 
         user = User.query.filter_by(username=username).first()
-        pass_hashed = user.password
-        user_id = user.id
+        if user:
+            pass_hashed = user.password
 
-        if bcrypt.check_password_hash(pass_hashed, password):
-            login_user(user)
-            return "<h1>Yay</h1>"
+            if bcrypt.check_password_hash(pass_hashed, password):
+                login_user(user)
+                return "<h1>Yay</h1>"
+            else:
+                abort(401)
         else:
             abort(401)
     else:
@@ -110,8 +132,8 @@ def register():
 # def github_login():
 #     if not github.authorized:
 #         return redirect(url_for('github.login'))
-#     else:
 #         account_info = github.get('/user')
+#     else:
 #         if account_info.ok:
 #             account_info_json = account_info.json()
 #             try:
@@ -128,4 +150,4 @@ def register():
 #             return "User created!"
 #     return '<h1>Request failed!</h1>'
 if __name__ == "__main__":
-    app.run()
+    app.run(port=8000)
