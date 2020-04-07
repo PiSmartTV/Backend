@@ -1,6 +1,5 @@
 flask
 Flask-SQLAlchemy
-Flask-APScheduler
 # flask_dance
 flask_bcrypt
 flask-login

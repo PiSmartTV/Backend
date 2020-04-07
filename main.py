@@ -4,7 +4,6 @@ import string
 import random
 import datetime
 from flask import Flask, url_for, redirect, render_template, request, jsonify
-from flask_apscheduler import APScheduler
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
@@ -13,6 +12,8 @@ from flask_login import LoginManager, UserMixin, login_required, login_user,\
 # from flask_dance.contrib.github import make_github_blueprint, github
 
 app = Flask(__name__)
+
+DATE_FORMAT = "%Y-%m-%d %X"
 
 # Blueprints
 # github_client_secret = os.environ.get("GITHUB_CLIENT_SECRET")
@@ -43,10 +44,6 @@ login_manager = LoginManager(app)
 
 bcrypt = Bcrypt(app)
 
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
-
 
 def generate_token(leng=64):
     return ''.join([random.choice(string.ascii_lowercase+"0123456789")
@@ -54,7 +51,7 @@ def generate_token(leng=64):
 
 
 def get_expire_date():
-    return datetime.datetime.now() + datetime.timedelta(minutes=10)
+    return datetime.datetime.now() + datetime.timedelta(seconds=1)
 
 
 class User(UserMixin, db.Model):
@@ -73,9 +70,9 @@ class Code(db.Model):
                      primary_key=True,
                      unique=True,
                      nullable=False)
-    device_code = db.Column(db.String(128), unique=True, nullable=False)
     ip_address = db.Column(db.String(15), unique=True, nullable=False)
     expire_date = db.Column(db.DateTime, default=get_expire_date)
+    approved_user = db.Column(db.Integer)
 
 
 @login_manager.user_loader
@@ -88,14 +85,14 @@ def home():
     return render_template("index.html")
 
 
-@scheduler.task('interval', id='do_job_1', seconds=1, misfire_grace_time=900)
 def delete_expired():
     expired = Code.query.filter(
         Code.expire_date <= datetime.datetime.now()
     ).all()
 
     if expired:
-        print(f"Deleting {len(expired)} expired code(s)")
+        curr_time = datetime.datetime.now().strftime(DATE_FORMAT)
+        print(f"[{curr_time}] Deleting {len(expired)} expired code(s)", flush=True)
 
     for code in expired:
         db.session.delete(code)
@@ -110,19 +107,17 @@ def logout():
 
 @app.route("/code", methods=["GET", "POST"])
 def code():
+    delete_expired()
     if request.method == "GET":
         code = generate_token(8)
-        device_code = generate_token(128)
         ip = request.remote_addr
 
         old_code = Code.query.filter_by(ip_address=ip).first()
         if old_code:
             old_code.code = code
-            old_code.device_code = device_code
         else:
             new_code = Code(
                 code=code,
-                device_code=device_code,
                 ip_address=ip,
                 expire_date=get_expire_date()
             )
@@ -132,10 +127,42 @@ def code():
 
         return jsonify({
             "message": "success",
-            "response": "200",
+            "response": 200,
             "code": code,
-            "device_code": device_code
         }), 200
+
+    elif request.method == "POST":
+
+        code = request.form["code"]
+
+        if code:
+            requested_code = Code.query.filter_by(
+                code=code
+            ).first()
+
+            if requested_code:
+                if not requested_code.approved_user == -1:
+                    user = load_user(requested_code.approved_user)
+                    login_user(user, remember=True)
+                    return jsonify({"message": "success", "response": 200}), 200
+                else:
+                    return jsonify({
+                        "message": "Code isn't approved yet",
+                        "response": 401
+                    }), 401
+            else:
+                return jsonify({"message": "Code expired or doesn't exist", "response": 401}), 401
+        else:
+            return jsonify({"message": "Invalid code", "response": 401}), 401
+
+
+@app.route("/register_code", methods=["GET", "POST"])
+@login_required
+def register_code():
+    if request.method == "GET":
+        return render_template("code.html")
+    elif request.method == "POST":
+        request.form["code"]
 
 
 @app.route("/token", methods=["GET"])
@@ -156,11 +183,11 @@ def login():
 
             if bcrypt.check_password_hash(pass_hashed, password):
                 login_user(user)
-                return jsonify({"message": "success", "response": "200"}), 200
+                return jsonify({"message": "success", "response": 200}), 200
             else:
-                return jsonify({"message": "password is wrong", "response": "401"}), 401
+                return jsonify({"message": "password is wrong", "response": 401}), 401
         else:
-            jsonify({"message": "username doesn't exist", "response": "401"}), 401
+            jsonify({"message": "username doesn't exist", "response": 401}), 401
     else:
         return render_template("login.html")
 
@@ -185,9 +212,9 @@ def register():
             db.session.commit()  # Commit changes
         except IntegrityError:
             # If Unique rule is broke
-            return jsonify({"message": "Already exists", "response": "401"}), 401
+            return jsonify({"message": "Already exists", "response": 401}), 401
         # Success
-        return jsonify({"message": "success", "response": "200"}), 200
+        return jsonify({"message": "success", "response": 200}), 200
     else:
         return render_template("register.html")
 
