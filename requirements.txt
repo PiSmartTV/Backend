@@ -1,6 +1,7 @@
 flask
 Flask-SQLAlchemy
-flask_dance
+Flask-APScheduler
+# flask_dance
 flask_bcrypt
 flask-login
 gunicorn
