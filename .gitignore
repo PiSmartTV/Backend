@@ -129,8 +129,10 @@ dmypy.json
 .pyre/
 
 # Setup keys for testing
-run_env.py
 run_env.sh
 
 # Database
 data.db
+
+# Testing
+test_client.py

@@ -9,34 +9,17 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, UserMixin, login_required, login_user,\
     logout_user, current_user
-# from flask_dance.contrib.github import make_github_blueprint, github
 
 app = Flask(__name__)
 
 DATE_FORMAT = "%Y-%m-%d %X"
 
-# Blueprints
-# github_client_secret = os.environ.get("GITHUB_CLIENT_SECRET")
-# github_client_id = os.environ.get("GITHUB_CLIENT_ID")
-# google_client_secret = os.environ.get("GOOGLE_CLIENT_SECRET")
-# google_client_id = os.environ.get("GOOGLE_CLIENT_ID")
 
 # App Config
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
 app.config["SECRET_KEY"] = os.environ.get("SQL_SECRET_KEY")
-app.config["SCHEDULER_API_ENABLED"] = True
-# app.config["SECRET_KEY"] = github_client_secret
-# app.conifg["GOOGLE_OAUTH_CLIENT_ID"] = google_client_id
-# app.config["GOOGLE_OAUTH_CLIENT_SECRET"] = google_client_secret
 
-
-# Make github blueprint
-# github_blueprint = make_github_blueprint(
-#     client_id=github_client_id,
-#     client_secret=github_client_secret
-# )
-# app.register_blueprint(github_blueprint, url_prefix='/login/github')
 
 db = SQLAlchemy(app)
 
@@ -51,7 +34,7 @@ def generate_token(leng=64):
 
 
 def get_expire_date():
-    return datetime.datetime.now() + datetime.timedelta(seconds=1)
+    return datetime.datetime.now() + datetime.timedelta(minutes=1)
 
 
 class User(UserMixin, db.Model):
@@ -92,7 +75,7 @@ def delete_expired():
 
     if expired:
         curr_time = datetime.datetime.now().strftime(DATE_FORMAT)
-        print(f"[{curr_time}] Deleting {len(expired)} expired code(s)", flush=True)
+        print(f"Deleting {len(expired)} expired code(s)", flush=True)
 
     for code in expired:
         db.session.delete(code)
@@ -141,7 +124,7 @@ def code():
             ).first()
 
             if requested_code:
-                if not requested_code.approved_user == -1:
+                if requested_code.approved_user:
                     user = load_user(requested_code.approved_user)
                     login_user(user, remember=True)
                     return jsonify({"message": "success", "response": 200}), 200
@@ -162,13 +145,18 @@ def register_code():
     if request.method == "GET":
         return render_template("code.html")
     elif request.method == "POST":
-        request.form["code"]
+        code = request.form["code"]
+
+        requested_code = Code.query.filter_by(code=code).first()
+        requested_code.approved_user = current_user.id
+        db.session.commit()
+        return jsonify({"message": "success", "response": 200}), 200
 
 
 @app.route("/token", methods=["GET"])
 @login_required
 def token():
-    return current_user.token
+    return jsonify({"message": "success", "response": 200, "token": current_user.token}), 200
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -220,4 +208,4 @@ def register():
 
 
 if __name__ == "__main__":
-    app.run(port=80)
+    app.run()
