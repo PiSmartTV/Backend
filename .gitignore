@@ -136,3 +136,8 @@ data.db
 
 # Testing
 test_client.py
+
+# NPM stuff
+templates/node_modules
+templates/.sass-cache
+
