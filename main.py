@@ -75,7 +75,6 @@ def delete_expired():
 
     if expired:
         curr_time = datetime.datetime.now().strftime(DATE_FORMAT)
-        print(f"Deleting {len(expired)} expired code(s)", flush=True)
 
     for code in expired:
         db.session.delete(code)
