@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import string
-import random
+from random import SystemRandom
 import datetime
 from flask import Flask, url_for, redirect, render_template, request, jsonify
 from flask_bcrypt import Bcrypt
@@ -29,7 +29,8 @@ bcrypt = Bcrypt(app)
 
 
 def generate_token(leng=64):
-    return ''.join([random.choice(string.ascii_lowercase+"0123456789")
+    sr = SystemRandom()
+    return ''.join([sr.choice(string.ascii_lowercase+"0123456789")
                     for i in range(leng)])
 
 
