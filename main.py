@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import string
+import json
 from random import SystemRandom
 import datetime
 from flask import Flask, url_for, redirect, render_template, request, jsonify
@@ -21,12 +22,24 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
 app.config["SECRET_KEY"] = os.environ.get("SQL_SECRET_KEY")
 
 
+# Posts
+POSTS_FOLDER = "posts"
+posts = []
+
+for filename in os.listdir(POSTS_FOLDER):
+    if filename != ".keep":
+        abs_file = os.path.join(POSTS_FOLDER, filename)
+
+        with open(abs_file) as file:
+            posts.append(json.loads(file.read()))
+
+
 db = SQLAlchemy(app)
 
 login_manager = LoginManager(app)
 
 bcrypt = Bcrypt(app)
-
+    
 
 def generate_token(leng=64):
     sr = SystemRandom()
@@ -66,7 +79,7 @@ def load_user(user_id):
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html", cards = posts)
 
 
 def delete_expired():

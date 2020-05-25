@@ -3,10 +3,8 @@
 <head>
 	<title>PiTV</title>
 	<meta charset="utf-8">
-	
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
@@ -47,44 +45,47 @@
 		</div>
 	</nav>
 
-	<!-- Landing image -->
-	<div class="container-fluid text-center" id="home">
-		<img class="img-fluid pt-4" style="max-width: 80% !important;" src="{{ url_for('static', filename='images/Home.png') }}" />
-		<div class="landing-text bg-dark">
+	<div class="container-fluid">
+
+		<!-- Text -->
+		<div class="container text-center" style="margin-top:5em">
 			<h1>PiTV</h1>
-			<h5>PiTV is smart TV for Raspberry Pi built on lightweight Alpine linux.</h4>
-				<button type="button" class="btn btn-primary">Download</button>
-				<button type="button" class="btn btn-secondary">Support us</button>
-			</div>
+			<h5>PiTV is smart TV for Raspberry Pi built on lightweight Alpine linux.</h5>
 		</div>
 
-		<!-- Jumbotron -->
-		<div class="container">
-			<div class="jumbotron bg-primary" id="f-jumbotron">
-				<h1>Free and Open Source</h1>
-				<p>PiTV is modern, fast and secure smart tv, but still <abbr title="Work In Progress">WIP</abbr>.</p>
-			</div>
-		</div>
-
-		<div class="modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Modal title</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<p>Modal body text goes here.</p>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary">Save changes</button>
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
+		<!-- Landing image -->
+		<div class="container-fluid text-center" style="margin-top: 5em">
+			<img class="img-fluid" style="max-width: 85% !important;" src="{{ url_for('static', filename='images/Home.png') }}" />
 		</div>
 	</div>
+
+	<!-- Jumbotron
+	<div class="container">
+		<div class="jumbotron bg-primary" style="margin-top: 4em">
+			<h1>Free and Open Source</h1>
+			<p>PiTV is modern, fast and secure smart tv, but still <abbr title="Work In Progress">WIP</abbr>.</p>
+		</div>
+	</div> -->
+
+	<!-- news -->
+	<div class="container" style="margin-top: 4em">
+		<div class="page-header">
+			<h3>News</h3>
+		</div>
+		<div class="card-group">
+			{% for card in cards %}
+			<div class="card" style="width: 18rem;">
+				<img class="card-img-top" src="{{ card["thumbnail"] }}" alt="Image">
+				<div class="card-body">
+					<h5 class="card-title">{{ card["title"] }}</h5>
+					<p class="card-text">{{ card["description"] }}</p>
+					<!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+
+	</div>
+
 </body>
 </html>

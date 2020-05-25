@@ -141,3 +141,6 @@ test_client.py
 templates/node_modules
 templates/.sass-cache
 
+# Posts
+posts/*
+!posts/.keep
