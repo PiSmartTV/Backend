@@ -1,6 +1,12 @@
+$gray-800: #343a40;
+
 $theme-colors:(
   "primary":#bd1143
 );
+
+$input-bg: darken($gray-800, 10) !important;
+$input-color: theme-color("light") !important;
+$input-border-color: darken($gray-800, 10) !important;
 
 @import "node_modules/bootstrap/scss/bootstrap";
 

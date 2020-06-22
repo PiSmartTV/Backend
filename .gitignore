@@ -144,3 +144,4 @@ templates/.sass-cache
 # Posts
 posts/*
 !posts/.keep
+.sass-cache

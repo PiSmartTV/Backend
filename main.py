@@ -23,15 +23,15 @@ app.config["SECRET_KEY"] = os.environ.get("SQL_SECRET_KEY")
 
 
 # Posts
-POSTS_FOLDER = "posts"
-posts = []
+# POSTS_FOLDER = "posts"
+# posts = []
 
-for filename in os.listdir(POSTS_FOLDER):
-    if filename != ".keep":
-        abs_file = os.path.join(POSTS_FOLDER, filename)
+# for filename in os.listdir(POSTS_FOLDER):
+#     if filename != ".keep":
+#         abs_file = os.path.join(POSTS_FOLDER, filename)
 
-        with open(abs_file) as file:
-            posts.append(json.loads(file.read()))
+#         with open(abs_file) as file:
+#             posts.append(json.loads(file.read()))
 
 
 db = SQLAlchemy(app)
@@ -79,7 +79,12 @@ def load_user(user_id):
 
 @app.route("/")
 def home():
-    return render_template("index.html", cards = posts)
+    logged = current_user.is_authenticated
+    if logged: username=current_user.username
+    else: username=None
+    return render_template("index.html", 
+    logged=logged, 
+    usename=username)
 
 
 def delete_expired():
@@ -98,7 +103,8 @@ def delete_expired():
 @app.route("/logout")
 @login_required
 def logout():
-    logout_user(current_user)
+    logout_user()
+    return jsonify({"message": "success", "response": 200})
 
 
 @app.route("/code", methods=["GET", "POST"])
@@ -156,15 +162,26 @@ def code():
 @login_required
 def register_code():
     if request.method == "GET":
-        return render_template("code.html")
+        # return redirect(url_for("account"))
+        return render_template("register_code.html")
     elif request.method == "POST":
         code = request.form["code"]
 
+        # TODO: Add error handling here
+        
         requested_code = Code.query.filter_by(code=code).first()
         requested_code.approved_user = current_user.id
         db.session.commit()
         return jsonify({"message": "success", "response": 200}), 200
 
+
+# @app.route("/account")
+# @login_required
+# def account():
+#     if request.method == "POST":
+#         pass
+#     else:
+#         return render_template("account.html")
 
 @app.route("/token", methods=["GET"])
 @login_required
